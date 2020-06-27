@@ -2,6 +2,10 @@
 Golang AMQP with reconnect, clustering and delivery guarantee.
 
 ```go
+import (
+	amqp "github.com/xssnick/amqp-safe"
+)
+
 // Start connection and open channel, async
 c := amqp.NewConnector(amqp.Config{
     Hosts: []string{"amqp://admin:password@127.0.0.1"},

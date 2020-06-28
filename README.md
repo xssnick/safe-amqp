@@ -13,13 +13,11 @@ c := amqp.NewConnector(amqp.Config{
 
 // Callback on channel ready
 c.OnReady(func() {
-    err := c.ExchangeDeclare("test-exchange", amqp.ExchangeDirect, true, false, false, false, nil)
-    if err != nil {
+    if err := c.ExchangeDeclare("test-exchange", amqp.ExchangeDirect, true, false, false, false, nil); err != nil {
         log.Panic(err)
     }
-
-    _, err = c.QueueDeclare("test-queue", true, false, false, false, nil)
-    if err != nil {
+   
+    if _, err := c.QueueDeclare("test-queue", true, false, false, false, nil); err != nil {
         log.Panic(err)
     }
 
@@ -28,11 +26,14 @@ c.OnReady(func() {
     }
 
     err := c.Publish("test-exchange", "", amqp.Publishing{
-        Body: []byte("hey),
+        Body: []byte("hey"),
     })
+    if err != nil {
+        log.Panic(err)
+    }
 
     c.Consume("test-queue", "", func(bytes []byte) amqp.Result {
-        log.Println("ev:", string(bytes))
+        log.Println("event:", string(bytes))
         return amqp.ResultOK
     })
 })

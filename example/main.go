@@ -53,9 +53,9 @@ func main() {
 			}
 		}()
 
-		c.Consume("test-queue", "", func(ev amqp.Delivery) {
-			log.Println("ev:", string(ev.Body))
-			ev.Ack(false)
+		c.Consume("test-queue", "", func(bytes []byte) amqp.Result {
+			log.Println("ev:", string(bytes))
+			return amqp.ResultOK
 		})
 	})
 

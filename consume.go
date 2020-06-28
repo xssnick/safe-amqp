@@ -4,7 +4,13 @@ import (
 	"time"
 )
 
-func (c *Connector) Consume(queue, consumer string, cb func(Delivery)) {
+type Result int
+
+const ResultOK Result = 1
+const ResultError Result = 2
+const ResultReject Result = 3
+
+func (c *Connector) Consume(queue, consumer string, cb func([]byte) Result) {
 	c.wg.Add(1)
 	go func() {
 		for c.closed == 0 {
@@ -26,7 +32,21 @@ func (c *Connector) Consume(queue, consumer string, cb func(Delivery)) {
 					break
 				}
 
-				cb(ev)
+				res := cb(ev.Body)
+
+				var err error
+				switch res {
+				case ResultOK:
+					err = ev.Ack(false)
+				case ResultError:
+					err = ev.Nack(false,true)
+				case ResultReject:
+					err = ev.Nack(false,false)
+				}
+
+				if err != nil {
+					c.cfg.Logger.Println("[ack/nack] failed, error:", err)
+				}
 			}
 		}
 		c.wg.Done()

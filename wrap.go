@@ -123,3 +123,30 @@ func (c *Connector) ExchangeUnbind(destination, key, source string, noWait bool,
 
 	return sch.ExchangeUnbind(destination, key, source, noWait, args)
 }
+
+func (c *Connector) Recover(requeue bool) error {
+	sch := c.ch
+	if sch == nil {
+		return ErrNoChannel
+	}
+
+	return sch.Recover(requeue)
+}
+
+func (c *Connector) Flow(active bool) error {
+	sch := c.ch
+	if sch == nil {
+		return ErrNoChannel
+	}
+
+	return sch.Flow(active)
+}
+
+func (c *Connector) Qos(prefetchCount, prefetchSize int, global bool) error {
+	sch := c.ch
+	if sch == nil {
+		return ErrNoChannel
+	}
+
+	return sch.Qos(prefetchCount, prefetchSize, global)
+}

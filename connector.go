@@ -53,17 +53,17 @@ type Connector struct {
 	cfg Config
 }
 
-func (c *Connector) Close() error {
+func (c *Connector) Close() (err error) {
 	atomic.StoreInt32(&c.closed, 1)
 
 	con := c.con
 	if con != nil {
-		_ = con.Close()
+		err = con.Close()
 	}
 
 	c.wg.Wait()
 
-	return nil
+	return err
 }
 
 func (c *Connector) Start() *Connector {
